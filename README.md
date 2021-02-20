@@ -1,8 +1,6 @@
 # Hello-world
 First Repository Hello-world
-Hi Subbu,
 
-Great job!!!!
+Subbu,great job!!!!
 
-Thanks,
-Subbu
+Thanks.
