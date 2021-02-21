@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  install:
+	commands:
+	  - echo install commands 1
+	  - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2&
+	  - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+	commands:
+	  - echo logging in to AWS ECR...
+	  - $(aws ecr get-login --no-include-email --region us-east-1)
+  build:
+	commands:
+	  - echo build Docker image on `date`
+	  - docker build -t subburepo:latest .
+	  - docker tag subburepo:latest 519968607167.dkr.ecr.us-east-1.amazonaws.com/subburepo:latest
+  post_build:
+	commands:
+	  - echo build Docker image complete `date`
+	  - echo push latest Docker images to ECR...
+	  - docker push 519968607167.dkr.ecr.us-east-1.amazonaws.com/subburepo:latest
+	  - printf '[{"name":"subbu-container","imageUri":"519968607167.dkr.ecr.us-east-1.amazonaws.com/subburepo:latest"}]' > imagedefinitions.json
+artifacts:
+  files:
+	- imagedefinitions.json
